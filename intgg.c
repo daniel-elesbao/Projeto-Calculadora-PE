@@ -305,7 +305,24 @@ IntGG* intgg_divisao(IntGG *a, IntGG *b) {
 }
 
 IntGG* intgg_modulo(IntGG *a, IntGG *b) {
-    return div_mod_core(a, b, 2);
+   /* Obtém o resto padrão da divisão*/
+    IntGG *resto = div_mod_core(a, b, 2);
+    /* CORREÇÃO:
+     * Se o resto não for zero e tiver sinal diferente do divisor,
+     * somamos o divisor ao resto.
+     * Ex: -101 % 10 
+     * Resto C = -1 (sinal negativo, divisor positivo)
+     * Ajuste = -1 + 10 = 9 
+     */
+    if (resto->sinal != b->sinal) {
+        /* Verifica se o resto é zero */
+        if (!(resto->tamanho == 1 && resto->digitos[0] == 0)) {
+            IntGG *temp = intgg_soma(resto, b);
+            intgg_liberar(resto);
+            return temp;
+        }
+    }
+    return resto;
 }
 
 /* MDC usando Algoritmo de Euclides Iterativo 
